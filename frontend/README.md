@@ -29,8 +29,8 @@
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/gestor-de-gastos.git
-cd gestor-de-gastos/frontend/frontend
+git clone https://github.com/Brian1794/gestor-de-gastos
+cd gestor-de-gastos/frontend
 ```
 
 ### 2. Instalar dependencias

@@ -32,7 +32,7 @@ Antes de comenzar asegúrate de tener instalado:
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/gestor-de-gastos.git
+git clone https://github.com/Brian1794/gestor-de-gastos
 cd gestor-de-gastos/backend
 ```
 
