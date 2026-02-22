@@ -1,410 +1,201 @@
-# Backend - Gestor de Gastos API
+# 💸 Gestor de Gastos
 
-Server Node.js + Express + Sequelize + MySQL
-
-## 🚀 Instalación
-
-### 1. Instalar dependencias
-```bash
-npm install
-```
-
-Se instalarán:
-- `express` - Framework web
-- `sequelize` - ORM para MySQL
-- `mysql2` - Driver MySQL
-- `cors` - CORS middleware
-- `dotenv` - Variables de entorno
-- `nodemon` - Auto-reload en desarrollo
-
-### 2. Configurar variables de entorno
-
-Crear archivo `.env` en la raíz del proyecto con:
-
-```env
-DB_HOST=bef27zlg5ocbaklgbxot-mysql.services.clever-cloud.com
-DB_NAME=bef27zlg5ocbaklgbxot
-DB_USER=uhlruotyrhukat5x
-DB_PASSWORD=Zh2rqSOeNXdzbDbyfUNR
-DB_PORT=3306
-PORT=3001
-```
-
-**Nota:** Ya existe `.env.example` como referencia
-
-### 3. Iniciar el servidor
-
-**Desarrollo (con auto-reload):**
-```bash
-npm run dev
-```
-
-**Producción:**
-```bash
-npm start
-```
-
-El servidor estará en: `http://localhost:3001`
+> Aplicación web full-stack para registrar, visualizar y gestionar gastos mensuales.
 
 ---
 
-## 📌 Endpoints
+## 🧰 Stack Tecnológico
 
-### GET /
-```bash
-curl http://localhost:3001/
-```
-Respuesta test del servidor
-
----
-
-### 📂 Categorías
-
-#### GET /api/categories
-Obtener todas las categorías ordenadas alfabéticamente
-
-```bash
-curl http://localhost:3001/api/categories
-```
-
-**Response:**
-```json
-[
-  {
-    "id": 1,
-    "name": "Alimentación",
-    "created_at": "2024-02-19T10:00:00.000Z"
-  }
-]
-```
-
-#### POST /api/categories
-Crear nueva categoría
-
-```bash
-curl -X POST http://localhost:3001/api/categories \
-  -H "Content-Type: application/json" \
-  -d '{"name": "Transporte"}'
-```
-
-**Request Body:**
-```json
-{
-  "name": "Transporte"
-}
-```
-
-**Response (201):**
-```json
-{
-  "id": 2,
-  "name": "Transporte",
-  "created_at": "2024-02-19T11:00:00.000Z"
-}
-```
-
-**Errores:**
-- `400` - Nombre obligatorio
-- `409` - Categoría ya existe
-- `500` - Error del servidor
+| Capa | Tecnología |
+|------|------------|
+| Frontend | React 19 + TypeScript + Tailwind CSS v4 + Vite 8 |
+| Backend | Django 4.2 + Django REST Framework |
+| Base de datos | MySQL / MariaDB 10.4+ |
+| HTTP Client | Axios |
 
 ---
 
-### 💰 Gastos
+## 📌 Funcionalidades
 
-#### GET /api/expenses
-Obtener gastos con filtrado, búsqueda, ordenamiento y paginación
-
-**Query Parameters:**
-- `page` (int, default: 1) - Número de página
-- `limit` (int, default: 10) - Registros por página
-- `sortBy` (string, default: "expense_date") - Campo: `expense_date`, `amount`, `description`
-- `order` (string, default: "DESC") - `ASC` o `DESC`
-- `category_id` (int, optional) - Filtrar por categoría
-- `search` (string, optional) - Buscar en descripción
-
-```bash
-# Obtener primera página
-curl "http://localhost:3001/api/expenses"
-
-# Filtrar por categoría, ordenar por monto DESC
-curl "http://localhost:3001/api/expenses?category_id=1&sortBy=amount&order=DESC"
-
-# Buscar "almuerzo" en página 2
-curl "http://localhost:3001/api/expenses?search=almuerzo&page=2&limit=5"
-```
-
-**Response:**
-```json
-{
-  "total": 25,
-  "page": 1,
-  "totalPages": 3,
-  "data": [
-    {
-      "id": 1,
-      "description": "Almuerzo en restaurante",
-      "amount": "45000.00",
-      "expense_date": "2024-02-19T12:30:00.000Z",
-      "category_id": 1,
-      "category": {
-        "id": 1,
-        "name": "Alimentación"
-      },
-      "created_at": "2024-02-19T10:00:00.000Z",
-      "updated_at": "2024-02-19T10:00:00.000Z"
-    }
-  ]
-}
-```
-
-#### POST /api/expenses
-Crear nuevo gasto
-
-```bash
-curl -X POST http://localhost:3001/api/expenses \
-  -H "Content-Type: application/json" \
-  -d '{
-    "description": "Almuerzo",
-    "amount": 45000,
-    "expense_date": "2024-02-19T12:30:00Z",
-    "category_id": 1
-  }'
-```
-
-**Request Body:**
-```json
-{
-  "description": "string (required)",
-  "amount": "number (required, > 0)",
-  "expense_date": "ISO date (required)",
-  "category_id": "integer (required)"
-}
-```
-
-**Response (201):**
-```json
-{
-  "id": 1,
-  "description": "Almuerzo",
-  "amount": "45000.00",
-  "expense_date": "2024-02-19T12:30:00.000Z",
-  "category_id": 1,
-  "category": {
-    "id": 1,
-    "name": "Alimentación"
-  },
-  "created_at": "2024-02-19T10:00:00.000Z",
-  "updated_at": "2024-02-19T10:00:00.000Z"
-}
-```
-
-**Errores:**
-- `400` - Campos obligatorios o monto inválido
-- `409` - Gasto duplicado (mismo nombre y monto)
-- `500` - Error del servidor
-
-#### PUT /api/expenses/:id
-Actualizar gasto existente
-
-```bash
-curl -X PUT http://localhost:3001/api/expenses/1 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "description": "Almuerzo actualizado",
-    "amount": 50000,
-    "expense_date": "2024-02-19T13:00:00Z",
-    "category_id": 1
-  }'
-```
-
-**Response:**
-```json
-{
-  "id": 1,
-  "description": "Almuerzo actualizado",
-  "amount": "50000.00",
-  "category": {
-    "id": 1,
-    "name": "Alimentación"
-  }
-}
-```
-
-**Errores:**
-- `404` - Gasto no encontrado
-- `400` - Monto inválido
-- `409` - Duplicado
-- `500` - Error del servidor
-
-#### DELETE /api/expenses/:id
-Eliminar gasto
-
-```bash
-curl -X DELETE http://localhost:3001/api/expenses/1
-```
-
-**Response (200):**
-```json
-{
-  "message": "Gasto eliminado correctamente"
-}
-```
-
-**Errores:**
-- `404` - Gasto no encontrado
-- `500` - Error del servidor
+- ✅ Registrar gastos con descripción, monto, fecha y categoría
+- ✅ Listar gastos con paginación (10 por página)
+- ✅ Editar y eliminar gastos
+- ✅ Total de gastos en tiempo real
+- ✅ Ordenar por cualquier columna (descripción, monto, fecha, categoría)
+- ✅ Buscar por descripción
+- ✅ Filtrar por categoría
+- ✅ Crear nuevas categorías desde el formulario
+- ✅ Prevención de gastos duplicados
+- ✅ Validaciones en frontend y backend
 
 ---
 
 ## 🗂️ Estructura del Proyecto
 
 ```
-backend/
-├── controllers/
-│   ├── categoryController.js     # Lógica GET y POST categorías
-│   └── expenseController.js      # Lógica CRUD gastos
-├── routes/
-│   ├── categoryRoutes.js         # Rutas /api/categories
-│   └── expenseRoutes.js          # Rutas /api/expenses
-├── src/
-│   ├── config/
-│   │   └── db.js                 # Conexión Sequelize
-│   ├── models/
-│   │   ├── Category.js           # Modelo Category
-│   │   ├── Expense.js            # Modelo Expense
-│   │   └── index.js              # Relaciones entre modelos
-│   └── app.js                    # Antiguo (usar server.js)
-├── server.js                      # ⭐ PUNTO DE ENTRADA PRINCIPAL
-├── package.json
-├── .env                           # Variables de entorno
-└── .env.example                   # Ejemplo de .env
+gestor-de-gastos/
+├── backend/                  # API REST con Django
+│   ├── core/
+│   │   ├── settings.py
+│   │   └── urls.py
+│   ├── gastos/
+│   │   ├── models.py
+│   │   ├── serializers.py
+│   │   ├── views.py
+│   │   └── urls.py
+│   ├── gestor_db.sql         # Script SQL de la base de datos
+│   ├── manage.py
+│   ├── requirements.txt
+│   └── README.md
+└── frontend/
+    └── frontend/             # App React + TypeScript
+        ├── src/
+        │   ├── services/
+        │   │   └── api.ts
+        │   ├── components/
+        │   │   └── GastoForm.tsx
+        │   ├── pages/
+        │   │   └── GastosPage.tsx
+        │   ├── App.tsx
+        │   └── index.css
+        ├── vite.config.ts
+        ├── package.json
+        └── README.md
 ```
 
 ---
 
-## 🔌 Flujo de Requisitos
+## 🚀 Instalación y ejecución
 
-1. **Cliente (Frontend)** envía request a `http://localhost:3001/api/...`
-2. **Server.js** inicia Express y conecta a BD
-3. **Routes** reciben la requisición
-4. **Controllers** procesa la lógica
-5. **Models (Sequelize)** interactúan con MySQL
-6. **Response** vuelve al cliente
+### Requisitos previos
+
+- [Python 3.10+](https://www.python.org/downloads/)
+- [Node.js 18+](https://nodejs.org/)
+- [XAMPP](https://www.apachefriends.org/) o MySQL 8+ / MariaDB 10.4+
+- [Git](https://git-scm.com/)
 
 ---
 
-## 🛠️ Comandos útiles
+### 1. Clonar el repositorio
 
 ```bash
+git clone https://github.com/tu-usuario/gestor-de-gastos.git
+cd gestor-de-gastos
+```
+
+---
+
+### 2. Configurar el Backend
+
+```bash
+cd backend
+
+# Crear y activar entorno virtual
+python -m venv .venv
+
+# Windows
+.venv\Scripts\activate
+
+# Mac/Linux
+source .venv/bin/activate
+
 # Instalar dependencias
-npm install
+pip install -r requirements.txt
+```
 
-# Iniciar en desarrollo
+**Crear la base de datos** — abre phpMyAdmin o MySQL Workbench y ejecuta:
+
+```bash
+gestor_db.sql
+```
+
+**Configurar credenciales** en `core/settings.py`:
+
+```python
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'gestor_db',
+        'USER': 'root',       # tu usuario MySQL
+        'PASSWORD': '',       # tu contraseña
+        'HOST': 'localhost',
+        'PORT': '3306',
+    }
+}
+```
+
+**Aplicar migraciones e iniciar:**
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+python manage.py runserver
+```
+
+✅ Backend disponible en: **http://127.0.0.1:8000**
+
+---
+
+### 3. Configurar el Frontend
+
+```bash
+cd ../frontend/frontend
+
+# Instalar dependencias
+npm install --legacy-peer-deps
+
+# Iniciar
 npm run dev
+```
 
-# Iniciar en producción
-npm start
+✅ Frontend disponible en: **http://localhost:5173**
 
-# Test (si se configura)
-npm test
+---
+
+## 🔗 Endpoints de la API
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/api/gastos/` | Listar gastos |
+| POST | `/api/gastos/` | Crear gasto |
+| PUT | `/api/gastos/{id}/` | Editar gasto |
+| DELETE | `/api/gastos/{id}/` | Eliminar gasto |
+| GET | `/api/gastos/total/` | Total de gastos |
+| GET | `/api/categorias/` | Listar categorías |
+| POST | `/api/categorias/` | Crear categoría |
+
+---
+
+## 📊 Modelo de datos
+
+```
+categorias
+├── id (PK)
+├── nombre (único)
+└── fecha_creacion
+
+gastos
+├── id (PK)
+├── descripcion
+├── monto (> 0)
+├── fecha_gasto
+├── categoria_id (FK → categorias)
+├── fecha_creacion
+└── fecha_actualizacion
 ```
 
 ---
 
-## ⚙️ Configuración de BD
+## 🐛 Solución de problemas
 
-El proyecto usa **Sequelize** como ORM con **MySQL2** como driver.
+**El backend no conecta a MySQL:**
+Verifica que XAMPP esté corriendo y que las credenciales en `settings.py` sean correctas.
 
-En `server.js`:
-```javascript
-const { connectDB } = require('./src/config/db');
+**Error de CORS:**
+Asegúrate de que `CORS_ALLOW_ALL_ORIGINS = True` esté en `settings.py`.
 
-connectDB().then(() => {
-  app.listen(PORT, () => {
-    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  });
-});
-```
+**Error de dependencias en el frontend:**
+Usa `--legacy-peer-deps` al instalar paquetes por compatibilidad con Vite 8 beta.
 
-La conexión:
-- Autentica con las credenciales de `.env`
-- Sincroniza los modelos (crea/actualiza tablas automáticamente)
-- Sale del proceso si hay error
-
----
-
-## 🔍 Validaciones
-
-### Backend valida:
-- ✅ Campos obligatorios
-- ✅ Monto > 0
-- ✅ Fecha válida
-- ✅ Categoría existente
-- ✅ Prevención de duplicados
-
-### Base de datos valida:
-- ✅ CHECK (amount > 0)
-- ✅ UNIQUE (description + amount)
-- ✅ FOREIGN KEY (category_id existe)
-- ✅ NOT NULL en campos obligatorios
-
----
-
-## 📊 Relaciones de BD
-
-```
-categories (1) ----< (N) expenses
-
-- 1 categoría puede tener muchos gastos
-- 1 gasto pertenece a 1 categoría
-- ON DELETE CASCADE: eliminar categoría elimina sus gastos
-```
-
----
-
-## 🐛 Debugging
-
-### Logs del servidor:
-```
-✅ Conexión a MySQL exitosa
-✅ Modelos sincronizados
-🚀 Servidor corriendo en http://localhost:3001
-```
-
-### Ver errores de BD:
-En `src/config/db.js` cambiar:
-```javascript
-logging: false,  // cambiar a console.log para ver queries
-```
-
-### Instalar herramientas de debugging
-```bash
-npm install --save-dev debug
-```
-
----
-
-## 🚀 Despliegue
-
-Para producción:
-1. Usar `npm start` en lugar de `npm run dev`
-2. Configurar variables de entorno en el servidor
-3. Usar un package como `pm2` para mantener el proceso vivo
-4. Configurar un proxy reverso (nginx/apache)
-
-```bash
-npm install -g pm2
-pm2 start server.js --name "gastos-api"
-pm2 save
-pm2 startup
-```
-
----
-
-## 📞 Soporte
-
-- Revisar logs en consola
-- Verificar conexión a BD
-- Revisar variables de entorno (.env)
-- Confirmar que puertos no estén en uso
+**Pantalla en negro en el frontend:**
+Abre la consola del navegador (F12) y revisa los errores en rojo.
