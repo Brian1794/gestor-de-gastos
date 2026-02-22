@@ -79,7 +79,7 @@ gestor-de-gastos/
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/gestor-de-gastos.git
+git clone https://github.com/Brian1794/gestor-de-gastos
 cd gestor-de-gastos
 ```
 
@@ -197,5 +197,3 @@ Asegúrate de que `CORS_ALLOW_ALL_ORIGINS = True` esté en `settings.py`.
 **Error de dependencias en el frontend:**
 Usa `--legacy-peer-deps` al instalar paquetes por compatibilidad con Vite 8 beta.
 
-**Pantalla en negro en el frontend:**
-Abre la consola del navegador (F12) y revisa los errores en rojo.
