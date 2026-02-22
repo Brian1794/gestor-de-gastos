@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background-color: #080a0f;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #0f1117;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2d3a;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #4c4f6b;
+}
+
+/* datetime-local styling */
+input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.5);
+  cursor: pointer;
+}
