@@ -36,33 +36,58 @@ Sistema desarrollado como solución a una prueba técnica, enfocado en buenas pr
 
 ```
 gestor-de-gastos/
-├── backend/                  # API REST con Django
+├── backend/
 │   ├── core/
+│   │   ├── __pycache__/
+│   │   ├── __init__.py
+│   │   ├── asgi.py
 │   │   ├── settings.py
-│   │   └── urls.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
 │   ├── gastos/
+│   │   ├── __pycache__/
+│   │   ├── migrations/
+│   │   │   ├── __pycache__/
+│   │   │   ├── 0001_initial.py
+│   │   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
 │   │   ├── models.py
 │   │   ├── serializers.py
-│   │   ├── views.py
-│   │   └── urls.py
-│   ├── gestor_db.sql         # Script SQL de la base de datos
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── gestor_db.sql
 │   ├── manage.py
 │   ├── requirements.txt
-│   └── README.md             # Instrucciones específicas del backend
+│   └── README.md
 └── frontend/
-    └── frontend/             # App React + TypeScript
-        ├── src/
-        │   ├── services/
-        │   │   └── api.ts
-        │   ├── components/
-        │   │   └── GastoForm.tsx
-        │   ├── pages/
-        │   │   └── GastosPage.tsx
-        │   ├── App.tsx
-        │   └── index.css
-        ├── vite.config.ts
-        ├── package.json
-        └── README.md         # Instrucciones específicas del frontend
+    ├── public/
+    ├── src/
+    │   ├── assets/
+    │   │   └── react.svg
+    │   ├── components/
+    │   │   └── GastoForm.tsx
+    │   ├── pages/
+    │   │   └── GastosPage.tsx
+    │   ├── services/
+    │   │   └── api.ts
+    │   ├── App.css
+    │   ├── App.tsx
+    │   ├── index.css
+    │   └── main.tsx
+    ├── .gitignore
+    ├── .hintrc
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    ├── vite.config.ts
+    └── README.md
 ```
 
 ---
@@ -107,3 +132,4 @@ gastos
 ## 🧑‍💻 Autor
 
 Desarrollado por **Brian Gerardo Alfonso Rodríguez** como prueba técnica full-stack.
+
