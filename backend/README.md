@@ -19,7 +19,7 @@
 
 ## 📋 Requisitos previos
 
-Antes de comenzar asegúrate de tener instalado:
+Antes de comenzar, asegúrate de tener instalado:
 
 - [Python 3.10+](https://www.python.org/downloads/)
 - [XAMPP](https://www.apachefriends.org/) o MySQL 8+ / MariaDB 10.4+
@@ -47,7 +47,7 @@ python -m venv .venv
 .venv\Scripts\activate
 ```
 
-**Mac / Linux:**
+**macOS / Linux:**
 ```bash
 source .venv/bin/activate
 ```
@@ -60,15 +60,19 @@ pip install -r requirements.txt
 
 ### 4. Crear la base de datos
 
-Abre **phpMyAdmin** (XAMPP), **MySQL Workbench** o tu cliente MySQL y ejecuta el archivo incluido:
+Tienes dos opciones:
 
-```bash
-gestor_db.sql
-```
+**Opción A — Usar el script SQL incluido** *(recomendado)*
 
-O créala manualmente:
+Abre **phpMyAdmin** (XAMPP), **MySQL Workbench** o tu cliente MySQL preferido e importa el archivo:
 
 ```
+backend/gestor_db.sql
+```
+
+**Opción B — Crear manualmente**
+
+```sql
 CREATE DATABASE IF NOT EXISTS gestor_db
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
@@ -78,60 +82,46 @@ USE gestor_db;
 -- =====================================
 -- Tabla: categorias
 -- =====================================
-
 CREATE TABLE categorias (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  
-  nombre VARCHAR(100) NOT NULL UNIQUE,
-  
+  id             INT AUTO_INCREMENT PRIMARY KEY,
+  nombre         VARCHAR(100) NOT NULL UNIQUE,
   fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
 -- =====================================
 -- Tabla: gastos
 -- =====================================
-
 CREATE TABLE gastos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  
-  descripcion VARCHAR(255) NOT NULL,
-  
-  monto DECIMAL(10, 2) NOT NULL,
-  
-  fecha_gasto DATETIME NOT NULL,
-  
-  categoria_id INT NOT NULL,
-  
-  fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  
-  fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP 
-    ON UPDATE CURRENT_TIMESTAMP,
+  id                  INT AUTO_INCREMENT PRIMARY KEY,
+  descripcion         VARCHAR(255) NOT NULL,
+  monto               DECIMAL(10, 2) NOT NULL,
+  fecha_gasto         DATETIME NOT NULL,
+  categoria_id        INT NOT NULL,
+  fecha_creacion      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                        ON UPDATE CURRENT_TIMESTAMP,
 
-  -- Validación de monto positivo
+  -- Monto siempre positivo
   CONSTRAINT chk_monto_positivo CHECK (monto > 0),
 
   -- Relación con categorias
   CONSTRAINT fk_gasto_categoria
-    FOREIGN KEY (categoria_id)
-    REFERENCES categorias(id)
+    FOREIGN KEY (categoria_id) REFERENCES categorias(id)
     ON DELETE RESTRICT
     ON UPDATE CASCADE,
 
-  -- Prevención razonable de duplicados
-  CONSTRAINT unique_gasto 
-    UNIQUE (descripcion, monto, fecha_gasto),
+  -- Prevención de duplicados
+  CONSTRAINT unique_gasto UNIQUE (descripcion, monto, fecha_gasto),
 
   -- Índices para rendimiento
-  INDEX idx_fecha_gasto (fecha_gasto),
+  INDEX idx_fecha_gasto  (fecha_gasto),
   INDEX idx_categoria_id (categoria_id),
-  INDEX idx_monto (monto)
-
+  INDEX idx_monto        (monto)
 ) ENGINE=InnoDB;
 
 -- =====================================
 -- Datos iniciales
 -- =====================================
-
 INSERT INTO categorias (nombre) VALUES
   ('Alimentación'),
   ('Transporte'),
@@ -140,7 +130,7 @@ INSERT INTO categorias (nombre) VALUES
   ('Servicios');
 ```
 
-### 5. Configurar la base de datos
+### 5. Configurar la conexión a la base de datos
 
 Abre `core/settings.py` y actualiza la sección `DATABASES` con tus credenciales:
 
@@ -149,8 +139,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gestor_db',
-        'USER': 'root',       # tu usuario MySQL
-        'PASSWORD': '',       # tu contraseña (vacío si no tiene)
+        'USER': 'root',   # tu usuario MySQL
+        'PASSWORD': '',   # tu contraseña (dejar vacío si no tiene)
         'HOST': 'localhost',
         'PORT': '3306',
         'OPTIONS': {
@@ -173,11 +163,11 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-El servidor estará disponible en: **http://127.0.0.1:8000**
+El servidor quedará disponible en: **http://127.0.0.1:8000**
 
 ---
 
-## 📌 Endpoints
+## 📌 Endpoints de la API
 
 ### Raíz
 
@@ -188,16 +178,16 @@ Retorna un listado de todos los endpoints disponibles.
 
 ---
 
-### 📂 Categorías
+### 📂 Categorías — `/api/categorias/`
 
-#### GET /api/categorias/
-Obtener todas las categorías
+#### `GET /api/categorias/`
+Obtiene todas las categorías disponibles.
 
 ```bash
 curl http://127.0.0.1:8000/api/categorias/
 ```
 
-**Response:**
+**Respuesta `200 OK`:**
 ```json
 [
   {
@@ -208,8 +198,10 @@ curl http://127.0.0.1:8000/api/categorias/
 ]
 ```
 
-#### POST /api/categorias/
-Crear nueva categoría
+---
+
+#### `POST /api/categorias/`
+Crea una nueva categoría.
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/categorias/ \
@@ -217,19 +209,22 @@ curl -X POST http://127.0.0.1:8000/api/categorias/ \
   -d '{"nombre": "Inversión"}'
 ```
 
-**Errores:**
-- `400` — Nombre obligatorio
-- `400` — Categoría ya existe
+**Errores posibles:**
+
+| Código | Descripción |
+|--------|-------------|
+| `400` | Nombre obligatorio |
+| `400` | La categoría ya existe |
 
 ---
 
-### 💰 Gastos
+### 💰 Gastos — `/api/gastos/`
 
-#### GET /api/gastos/
-Obtener gastos con paginación, filtros y ordenamiento
+#### `GET /api/gastos/`
+Obtiene los gastos con soporte de paginación, búsqueda, filtros y ordenamiento.
 
 ```bash
-# Obtener primera página
+# Primera página (10 registros por defecto)
 curl http://127.0.0.1:8000/api/gastos/
 
 # Filtrar por categoría
@@ -245,7 +240,7 @@ curl "http://127.0.0.1:8000/api/gastos/?ordering=-monto"
 curl "http://127.0.0.1:8000/api/gastos/?page=2"
 ```
 
-**Response:**
+**Respuesta `200 OK`:**
 ```json
 {
   "count": 25,
@@ -266,8 +261,10 @@ curl "http://127.0.0.1:8000/api/gastos/?page=2"
 }
 ```
 
-#### POST /api/gastos/
-Crear nuevo gasto
+---
+
+#### `POST /api/gastos/`
+Crea un nuevo gasto.
 
 ```bash
 curl -X POST http://127.0.0.1:8000/api/gastos/ \
@@ -280,13 +277,18 @@ curl -X POST http://127.0.0.1:8000/api/gastos/ \
   }'
 ```
 
-**Errores:**
-- `400` — Campos obligatorios faltantes
-- `400` — Monto debe ser mayor que cero
-- `400` — Gasto duplicado
+**Errores posibles:**
 
-#### PUT /api/gastos/{id}/
-Actualizar gasto existente
+| Código | Descripción |
+|--------|-------------|
+| `400` | Campos obligatorios faltantes |
+| `400` | El monto debe ser mayor que cero |
+| `400` | Gasto duplicado (misma descripción, monto y fecha) |
+
+---
+
+#### `PUT /api/gastos/{id}/`
+Actualiza un gasto existente por completo.
 
 ```bash
 curl -X PUT http://127.0.0.1:8000/api/gastos/1/ \
@@ -299,21 +301,27 @@ curl -X PUT http://127.0.0.1:8000/api/gastos/1/ \
   }'
 ```
 
-#### DELETE /api/gastos/{id}/
-Eliminar gasto
+---
+
+#### `DELETE /api/gastos/{id}/`
+Elimina un gasto por su ID.
 
 ```bash
 curl -X DELETE http://127.0.0.1:8000/api/gastos/1/
 ```
 
-#### GET /api/gastos/total/
-Obtener el total de todos los gastos
+**Respuesta:** `204 No Content`
+
+---
+
+#### `GET /api/gastos/total/`
+Retorna la suma total de todos los gastos registrados.
 
 ```bash
 curl http://127.0.0.1:8000/api/gastos/total/
 ```
 
-**Response:**
+**Respuesta `200 OK`:**
 ```json
 {
   "total": "350000.00"
@@ -326,32 +334,65 @@ curl http://127.0.0.1:8000/api/gastos/total/
 
 | Parámetro | Tipo | Descripción | Ejemplo |
 |-----------|------|-------------|---------|
-| `page` | int | Número de página | `?page=2` |
-| `categoria` | int | Filtrar por categoría | `?categoria=1` |
-| `search` | string | Buscar en descripción | `?search=almuerzo` |
-| `ordering` | string | Ordenar por campo | `?ordering=-monto` |
+| `page` | `int` | Número de página | `?page=2` |
+| `categoria` | `int` | Filtrar por ID de categoría | `?categoria=1` |
+| `search` | `string` | Buscar en la descripción | `?search=almuerzo` |
+| `ordering` | `string` | Ordenar por campo (prefijo `-` = descendente) | `?ordering=-monto` |
 
-**Campos para `ordering`:**
-- `fecha_gasto` / `-fecha_gasto`
-- `monto` / `-monto`
-- `descripcion` / `-descripcion`
-- `categoria__nombre` / `-categoria__nombre`
+**Campos válidos para `ordering`:**
+
+| Campo | Descripción |
+|-------|-------------|
+| `fecha_gasto` / `-fecha_gasto` | Por fecha del gasto |
+| `monto` / `-monto` | Por monto |
+| `descripcion` / `-descripcion` | Por descripción alfabética |
+| `categoria__nombre` / `-categoria__nombre` | Por nombre de categoría |
 
 ---
 
 ## ✅ Validaciones
 
-### Serializer valida:
-- ✅ Monto mayor que cero
-- ✅ Descripción no vacía
-- ✅ Fecha del gasto obligatoria
+Las validaciones están implementadas en **dos capas** para mayor robustez:
+
+### Capa de Serializer (Django)
+- ✅ Monto debe ser mayor que cero
+- ✅ Descripción no puede estar vacía
+- ✅ Fecha del gasto es obligatoria
 - ✅ Prevención de duplicados (descripción + monto + fecha)
 
-### Base de datos valida:
-- ✅ `CHECK (monto > 0)`
-- ✅ `UNIQUE (descripcion, monto, fecha_gasto)`
-- ✅ `FOREIGN KEY (categoria_id)`
-- ✅ `NOT NULL` en campos obligatorios
+### Capa de Base de Datos (MySQL)
+- ✅ `CHECK (monto > 0)` — integridad a nivel motor
+- ✅ `UNIQUE (descripcion, monto, fecha_gasto)` — duplicados imposibles
+- ✅ `FOREIGN KEY (categoria_id)` — referencia íntegra a categorías
+- ✅ `NOT NULL` en todos los campos obligatorios
+
+> La validación en ambas capas garantiza consistencia incluso si los datos llegan por fuera del API.
+
+---
+
+## 🔌 Flujo de una petición
+
+```
+Cliente (Frontend React)
+        │
+        ▼
+  core/urls.py             →  Enruta /api/ hacia gastos/urls.py
+        │
+        ▼
+  gastos/urls.py           →  Enruta al ViewSet correspondiente
+        │
+        ▼
+  gastos/views.py          →  Procesa la lógica de negocio
+        │
+        ▼
+  gastos/serializers.py    →  Valida y serializa los datos
+        │
+        ▼
+  gastos/models.py         →  Interactúa con MySQL
+        │
+        ▼
+  Respuesta JSON           →  Regresa al cliente
+```
 
 ---
 
@@ -360,97 +401,81 @@ curl http://127.0.0.1:8000/api/gastos/total/
 ```
 backend/
 ├── core/
-│   ├── settings.py          # Configuración del proyecto
-│   ├── urls.py              # URLs principales
+│   ├── settings.py          # Configuración global del proyecto
+│   ├── urls.py              # Enrutamiento principal
+│   ├── asgi.py
 │   └── wsgi.py
 ├── gastos/
 │   ├── migrations/          # Migraciones de Django
-│   ├── models.py            # Modelos Gasto y Categoría
-│   ├── serializers.py       # Validaciones y serialización
-│   ├── views.py             # Lógica de los endpoints
-│   ├── urls.py              # URLs de la app
-│   └── admin.py
+│   ├── models.py            # Modelos: Gasto y Categoría
+│   ├── serializers.py       # Validaciones y serialización de datos
+│   ├── views.py             # Lógica de los endpoints (ViewSets)
+│   ├── urls.py              # Rutas de la app gastos
+│   ├── admin.py             # Registro en el panel de administración
+│   └── apps.py
 ├── gestor_db.sql            # Script SQL para crear la base de datos
 ├── manage.py
-├── requirements.txt
+├── requirements.txt         # Dependencias del proyecto
 └── README.md
 ```
-
----
-
-## 🔌 Flujo de una petición
-
-```
-Cliente (Frontend)
-      ↓
-  core/urls.py          → Enruta /api/ a gastos/urls.py
-      ↓
-  gastos/urls.py        → Enruta al ViewSet correspondiente
-      ↓
-  gastos/views.py       → Procesa la lógica del negocio
-      ↓
-  gastos/serializers.py → Valida y serializa los datos
-      ↓
-  gastos/models.py      → Interactúa con MySQL
-      ↓
-  Response JSON         → Regresa al cliente
-```
-
----
-
-## 🗄️ Categorías iniciales
-
-El archivo `gestor_db.sql` incluye las siguientes categorías por defecto:
-
-- Alimentación
-- Transporte
-- Entretenimiento
-- Salud
-- Servicios
-
----
-
-## 🛠️ Comandos útiles
-
-```bash
-# Activar entorno virtual (Windows)
-.venv\Scripts\activate
-
-# Instalar dependencias
-pip install -r requirements.txt
-
-# Crear migraciones
-python manage.py makemigrations
-
-# Aplicar migraciones
-python manage.py migrate
-
-# Iniciar servidor
-python manage.py runserver
-
-# Guardar dependencias actuales
-pip freeze > requirements.txt
-```
-
----
-
-## ⚙️ Variables importantes en settings.py
-
-| Variable | Valor | Descripción |
-|----------|-------|-------------|
-| `DEBUG` | `True` | Cambiar a `False` en producción |
-| `CORS_ALLOW_ALL_ORIGINS` | `True` | Permite peticiones desde el frontend |
-| `PAGE_SIZE` | `10` | Registros por página |
 
 ---
 
 ## 📊 Relaciones de base de datos
 
 ```
-categorias (1) ────< (N) gastos
+categorias (1) ────────────< (N) gastos
 
-- 1 categoría puede tener muchos gastos
-- 1 gasto pertenece a 1 categoría
-- ON DELETE RESTRICT: no se puede eliminar una categoría con gastos asociados
-- ON UPDATE CASCADE: si cambia el id de categoría, se actualiza en gastos
+Una categoría puede tener muchos gastos.
+Un gasto pertenece a exactamente una categoría.
+
+ON DELETE RESTRICT  →  No se puede eliminar una categoría que tenga gastos asociados.
+ON UPDATE CASCADE   →  Si el ID de una categoría cambia, se actualiza en todos sus gastos.
+```
+
+---
+
+## 🗄️ Categorías iniciales
+
+El script `gestor_db.sql` inserta automáticamente estas categorías al crear la base de datos:
+
+| ID | Nombre |
+|----|--------|
+| 1 | Alimentación |
+| 2 | Transporte |
+| 3 | Entretenimiento |
+| 4 | Salud |
+| 5 | Servicios |
+
+---
+
+## ⚙️ Variables clave en `settings.py`
+
+| Variable | Valor por defecto | Descripción |
+|----------|-------------------|-------------|
+| `DEBUG` | `True` | Cambiar a `False` en producción |
+| `CORS_ALLOW_ALL_ORIGINS` | `True` | Permite peticiones desde el frontend |
+| `PAGE_SIZE` | `10` | Cantidad de registros por página |
+
+---
+
+## 🛠️ Comandos de referencia rápida
+
+```bash
+# Activar entorno virtual
+.venv\Scripts\activate          # Windows
+source .venv/bin/activate       # macOS / Linux
+
+# Instalar dependencias
+pip install -r requirements.txt
+
+# Migraciones
+python manage.py makemigrations
+python manage.py migrate
+
+# Iniciar servidor de desarrollo
+python manage.py runserver
+
+# Guardar dependencias actuales
+pip freeze > requirements.txt
 ```
