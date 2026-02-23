@@ -20,7 +20,6 @@
 
 - [Node.js 18+](https://nodejs.org/)
 - [Git](https://git-scm.com/)
-- Backend corriendo en `http://127.0.0.1:8000`
 
 ---
 
