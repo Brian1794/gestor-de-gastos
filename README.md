@@ -2,12 +2,14 @@
 
 > Aplicación web full-stack para registrar, visualizar y gestionar gastos mensuales.
 
+Sistema desarrollado como solución a una prueba técnica, enfocado en buenas prácticas de arquitectura, validación de datos, separación de responsabilidades y desarrollo full-stack moderno.
+
 ---
 
 ## 🧰 Stack Tecnológico
 
 | Capa | Tecnología |
-|------|------------|
+|------|-----------|
 | Frontend | React 19 + TypeScript + Tailwind CSS v4 + Vite 8 |
 | Backend | Django 4.2 + Django REST Framework |
 | Base de datos | MySQL / MariaDB 10.4+ |
@@ -46,7 +48,7 @@ gestor-de-gastos/
 │   ├── gestor_db.sql         # Script SQL de la base de datos
 │   ├── manage.py
 │   ├── requirements.txt
-│   └── README.md
+│   └── README.md             # Instrucciones específicas del backend
 └── frontend/
     └── frontend/             # App React + TypeScript
         ├── src/
@@ -60,21 +62,12 @@ gestor-de-gastos/
         │   └── index.css
         ├── vite.config.ts
         ├── package.json
-        └── README.md
+        └── README.md         # Instrucciones específicas del frontend
 ```
 
 ---
 
-## 🚀 Instalación y ejecución
-
-### Requisitos previos
-
-- [Python 3.10+](https://www.python.org/downloads/)
-- [Node.js 18+](https://nodejs.org/)
-- [XAMPP](https://www.apachefriends.org/) o MySQL 8+ / MariaDB 10.4+
-- [Git](https://git-scm.com/)
-
----
+## 📦 Instalación
 
 ### 1. Clonar el repositorio
 
@@ -83,117 +76,34 @@ git clone https://github.com/Brian1794/gestor-de-gastos
 cd gestor-de-gastos
 ```
 
----
+### 2. Configuración del Backend y Frontend
 
-### 2. Configurar el Backend
+Cada módulo del proyecto tiene su propio `README.md` con instrucciones detalladas de instalación, configuración y ejecución:
 
-```bash
-cd backend
-
-# Crear y activar entorno virtual
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# Mac/Linux
-source .venv/bin/activate
-
-# Instalar dependencias
-pip install -r requirements.txt
-```
-
-**Crear la base de datos** — abre phpMyAdmin o MySQL Workbench y ejecuta:
-
-```bash
-gestor_db.sql
-```
-
-**Configurar credenciales** en `core/settings.py`:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gestor_db',
-        'USER': 'root',       # tu usuario MySQL
-        'PASSWORD': '',       # tu contraseña
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
-
-**Aplicar migraciones e iniciar:**
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
-
-✅ Backend disponible en: **http://127.0.0.1:8000**
+Esto permite mantener una separación clara de responsabilidades y documentación modular.
 
 ---
 
-### 3. Configurar el Frontend
-
-```bash
-cd ../frontend/frontend
-
-# Instalar dependencias
-npm install --legacy-peer-deps
-
-# Iniciar
-npm run dev
-```
-
-✅ Frontend disponible en: **http://localhost:5173**
-
----
-
-## 🔗 Endpoints de la API
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/gastos/` | Listar gastos |
-| POST | `/api/gastos/` | Crear gasto |
-| PUT | `/api/gastos/{id}/` | Editar gasto |
-| DELETE | `/api/gastos/{id}/` | Eliminar gasto |
-| GET | `/api/gastos/total/` | Total de gastos |
-| GET | `/api/categorias/` | Listar categorías |
-| POST | `/api/categorias/` | Crear categoría |
-
----
-
-## 📊 Modelo de datos
+## 📊 Modelo de Datos
 
 ```
 categorias
-├── id (PK)
-├── nombre (único)
+├── id               (PK)
+├── nombre           (único)
 └── fecha_creacion
 
 gastos
-├── id (PK)
+├── id               (PK)
 ├── descripcion
-├── monto (> 0)
+├── monto            (> 0)
 ├── fecha_gasto
-├── categoria_id (FK → categorias)
+├── categoria_id     (FK → categorias)
 ├── fecha_creacion
 └── fecha_actualizacion
 ```
 
 ---
 
-## 🐛 Solución de problemas
+## 🧑‍💻 Autor
 
-**El backend no conecta a MySQL:**
-Verifica que XAMPP esté corriendo y que las credenciales en `settings.py` sean correctas.
-
-**Error de CORS:**
-Asegúrate de que `CORS_ALLOW_ALL_ORIGINS = True` esté en `settings.py`.
-
-**Error de dependencias en el frontend:**
-Usa `--legacy-peer-deps` al instalar paquetes por compatibilidad con Vite 8 beta.
-
+Desarrollado por **Brian Gerardo Alfonso Rodríguez** como prueba técnica full-stack.
