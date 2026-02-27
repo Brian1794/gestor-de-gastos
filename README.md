@@ -2,12 +2,14 @@
 
 > Aplicación web full-stack para registrar, visualizar y gestionar gastos mensuales.
 
+Sistema desarrollado como solución a una prueba técnica, enfocado en buenas prácticas de arquitectura, validación de datos, separación de responsabilidades y desarrollo full-stack moderno.
+
 ---
 
 ## 🧰 Stack Tecnológico
 
 | Capa | Tecnología |
-|------|------------|
+|------|-----------|
 | Frontend | React 19 + TypeScript + Tailwind CSS v4 + Vite 8 |
 | Backend | Django 4.2 + Django REST Framework |
 | Base de datos | MySQL / MariaDB 10.4+ |
@@ -34,168 +36,100 @@
 
 ```
 gestor-de-gastos/
-├── backend/                  # API REST con Django
+├── backend/
 │   ├── core/
+│   │   ├── __pycache__/
+│   │   ├── __init__.py
+│   │   ├── asgi.py
 │   │   ├── settings.py
-│   │   └── urls.py
+│   │   ├── urls.py
+│   │   └── wsgi.py
 │   ├── gastos/
+│   │   ├── __pycache__/
+│   │   ├── migrations/
+│   │   │   ├── __pycache__/
+│   │   │   ├── 0001_initial.py
+│   │   │   └── __init__.py
+│   │   ├── __init__.py
+│   │   ├── admin.py
+│   │   ├── apps.py
 │   │   ├── models.py
 │   │   ├── serializers.py
-│   │   ├── views.py
-│   │   └── urls.py
-│   ├── gestor_db.sql         # Script SQL de la base de datos
+│   │   ├── tests.py
+│   │   ├── urls.py
+│   │   └── views.py
+│   ├── gestor_db.sql
 │   ├── manage.py
 │   ├── requirements.txt
 │   └── README.md
 └── frontend/
-    └── frontend/             # App React + TypeScript
-        ├── src/
-        │   ├── services/
-        │   │   └── api.ts
-        │   ├── components/
-        │   │   └── GastoForm.tsx
-        │   ├── pages/
-        │   │   └── GastosPage.tsx
-        │   ├── App.tsx
-        │   └── index.css
-        ├── vite.config.ts
-        ├── package.json
-        └── README.md
+    ├── public/
+    ├── src/
+    │   ├── assets/
+    │   │   └── react.svg
+    │   ├── components/
+    │   │   └── GastoForm.tsx
+    │   ├── pages/
+    │   │   └── GastosPage.tsx
+    │   ├── services/
+    │   │   └── api.ts
+    │   ├── App.css
+    │   ├── App.tsx
+    │   ├── index.css
+    │   └── main.tsx
+    ├── .gitignore
+    ├── .hintrc
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
+    ├── package.json
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    ├── vite.config.ts
+    └── README.md
 ```
 
 ---
 
-## 🚀 Instalación y ejecución
-
-### Requisitos previos
-
-- [Python 3.10+](https://www.python.org/downloads/)
-- [Node.js 18+](https://nodejs.org/)
-- [XAMPP](https://www.apachefriends.org/) o MySQL 8+ / MariaDB 10.4+
-- [Git](https://git-scm.com/)
-
----
+## 📦 Instalación
 
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/tu-usuario/gestor-de-gastos.git
+git clone https://github.com/Brian1794/gestor-de-gastos
 cd gestor-de-gastos
 ```
 
----
+### 2. Configuración del Backend y Frontend
 
-### 2. Configurar el Backend
+Cada módulo del proyecto tiene su propio `README.md` con instrucciones detalladas de instalación, configuración y ejecución:
 
-```bash
-cd backend
-
-# Crear y activar entorno virtual
-python -m venv .venv
-
-# Windows
-.venv\Scripts\activate
-
-# Mac/Linux
-source .venv/bin/activate
-
-# Instalar dependencias
-pip install -r requirements.txt
-```
-
-**Crear la base de datos** — abre phpMyAdmin o MySQL Workbench y ejecuta:
-
-```bash
-gestor_db.sql
-```
-
-**Configurar credenciales** en `core/settings.py`:
-
-```python
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'gestor_db',
-        'USER': 'root',       # tu usuario MySQL
-        'PASSWORD': '',       # tu contraseña
-        'HOST': 'localhost',
-        'PORT': '3306',
-    }
-}
-```
-
-**Aplicar migraciones e iniciar:**
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-python manage.py runserver
-```
-
-✅ Backend disponible en: **http://127.0.0.1:8000**
+Esto permite mantener una separación clara de responsabilidades y documentación modular.
 
 ---
 
-### 3. Configurar el Frontend
-
-```bash
-cd ../frontend/frontend
-
-# Instalar dependencias
-npm install --legacy-peer-deps
-
-# Iniciar
-npm run dev
-```
-
-✅ Frontend disponible en: **http://localhost:5173**
-
----
-
-## 🔗 Endpoints de la API
-
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/api/gastos/` | Listar gastos |
-| POST | `/api/gastos/` | Crear gasto |
-| PUT | `/api/gastos/{id}/` | Editar gasto |
-| DELETE | `/api/gastos/{id}/` | Eliminar gasto |
-| GET | `/api/gastos/total/` | Total de gastos |
-| GET | `/api/categorias/` | Listar categorías |
-| POST | `/api/categorias/` | Crear categoría |
-
----
-
-## 📊 Modelo de datos
+## 📊 Modelo de Datos
 
 ```
 categorias
-├── id (PK)
-├── nombre (único)
+├── id               (PK)
+├── nombre           (único)
 └── fecha_creacion
 
 gastos
-├── id (PK)
+├── id               (PK)
 ├── descripcion
-├── monto (> 0)
+├── monto            (> 0)
 ├── fecha_gasto
-├── categoria_id (FK → categorias)
+├── categoria_id     (FK → categorias)
 ├── fecha_creacion
 └── fecha_actualizacion
 ```
 
 ---
 
-## 🐛 Solución de problemas
+## 🧑‍💻 Autor
 
-**El backend no conecta a MySQL:**
-Verifica que XAMPP esté corriendo y que las credenciales en `settings.py` sean correctas.
+Desarrollado por **Brian Gerardo Alfonso Rodríguez** como prueba técnica full-stack.
 
-**Error de CORS:**
-Asegúrate de que `CORS_ALLOW_ALL_ORIGINS = True` esté en `settings.py`.
-
-**Error de dependencias en el frontend:**
-Usa `--legacy-peer-deps` al instalar paquetes por compatibilidad con Vite 8 beta.
-
-**Pantalla en negro en el frontend:**
-Abre la consola del navegador (F12) y revisa los errores en rojo.

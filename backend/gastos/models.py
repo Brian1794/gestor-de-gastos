@@ -6,7 +6,7 @@ class Categoria(models.Model):
 
     class Meta:
         db_table = 'categorias'
-        managed = False  # Django no toca la tabla, ya existe
+        managed = False 
 
     def __str__(self):
         return self.nombre
@@ -26,7 +26,7 @@ class Gasto(models.Model):
 
     class Meta:
         db_table = 'gastos'
-        managed = False  # Django no toca la tabla, ya existe
+        managed = False  
 
     def __str__(self):
         return self.descripcion

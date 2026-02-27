@@ -20,7 +20,6 @@
 
 - [Node.js 18+](https://nodejs.org/)
 - [Git](https://git-scm.com/)
-- Backend corriendo en `http://127.0.0.1:8000`
 
 ---
 
@@ -101,21 +100,32 @@ const API = axios.create({
 ## 🗂️ Estructura del proyecto
 
 ```
-frontend/
+
 └── frontend/
+    ├── public/
     ├── src/
-    │   ├── services/
-    │   │   └── api.ts            # Llamadas al backend con Axios
+    │   ├── assets/
+    │   │   └── react.svg
     │   ├── components/
-    │   │   └── GastoForm.tsx     # Modal de crear/editar gasto
+    │   │   └── GastoForm.tsx
     │   ├── pages/
-    │   │   └── GastosPage.tsx    # Página principal con tabla
-    │   ├── App.tsx               # Componente raíz
-    │   ├── main.tsx              # Punto de entrada
-    │   └── index.css             # Estilos globales + Tailwind
-    ├── vite.config.ts            # Configuración de Vite + Tailwind
-    ├── tsconfig.json
+    │   │   └── GastosPage.tsx
+    │   ├── services/
+    │   │   └── api.ts
+    │   ├── App.css
+    │   ├── App.tsx
+    │   ├── index.css
+    │   └── main.tsx
+    ├── .gitignore
+    ├── .hintrc
+    ├── eslint.config.js
+    ├── index.html
+    ├── package-lock.json
     ├── package.json
+    ├── tsconfig.app.json
+    ├── tsconfig.json
+    ├── tsconfig.node.json
+    ├── vite.config.ts
     └── README.md
 ```
 
